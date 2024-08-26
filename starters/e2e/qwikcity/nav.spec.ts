@@ -183,6 +183,39 @@ test.describe("actions", () => {
         expect(page.url()).toBe(startUrl);
       }
     });
+
+    test("preventNavigate", async ({ page }) => {
+      await page.goto("/qwikcity-test/prevent-navigate/");
+      const button = page.locator("#pn-button");
+      const link = page.locator("#pn-link");
+      const count = page.locator("#pn-runcount");
+      await expect(count).toHaveText("0");
+      await link.click();
+      await expect(link).not.toBeVisible();
+      expect(new URL(page.url()).pathname).toBe("/qwikcity-test/");
+      await page.goBack();
+      await expect(count).toHaveText("0");
+      await expect(button).toHaveText("is clean");
+      await button.click();
+      await expect(button).toHaveText("is dirty");
+      let didTrigger = false;
+      page.on("dialog", async (dialog) => {
+        didTrigger = true;
+        expect(dialog.type()).toBe("beforeunload");
+        await dialog.accept();
+      });
+      await page.reload();
+      expect(didTrigger).toBe(true);
+      await expect(count).toHaveText("0");
+      await button.click();
+      await link.click();
+      await expect(count).toHaveText("1");
+      await link.click();
+      await expect(count).toHaveText("2");
+      expect(new URL(page.url()).pathname).toBe(
+        "/qwikcity-test/prevent-navigate/",
+      );
+    });
   }
 
   function tests() {

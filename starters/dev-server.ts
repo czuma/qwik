@@ -213,7 +213,7 @@ export {
           disableVendorScan: true,
           vendorRoots: enableCityServer ? [qwikCityMjs] : [],
           entryStrategy: {
-            type: "single",
+            type: "segment",
           },
           client: {
             manifestOutput(manifest) {

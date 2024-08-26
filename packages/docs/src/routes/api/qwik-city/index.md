@@ -1682,6 +1682,26 @@ export declare type PathParams = Record<string, string>;
 
 [Edit this section](https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/types.ts)
 
+## PreventNavigateCallback
+
+Before SPA navigation (via `<Link />` or `useNavigate()`), this will be called to check if the navigation should be prevented.
+
+This can be used to show a nice dialog to the user, and wait for the user to confirm.
+
+Return `true` to prevent navigation. If you return a Promise, the navigation will be blocked until the promise resolves.
+
+However, when the user navigates away by clicking on a regular `<a />` or using the browser's back/forward buttons, this callback will not be awaited. This is because the browser does not provide a way to asynchronously prevent these navigations. In this case, returning a Promise or returning `true` will tell the browser to show a confirmation dialog, which cannot be customized.
+
+When the callback is called from the browser, the `fromBrowser` parameter will be `true`. Use this to know whether to show a dialog or just return `true` to prevent the navigation.
+
+```typescript
+export type PreventNavigateCallback = (
+  fromBrowser?: boolean,
+) => ValueOrPromise<boolean>;
+```
+
+[Edit this section](https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/types.ts)
+
 ## QWIK_CITY_SCROLLER
 
 ```typescript
@@ -2384,6 +2404,45 @@ useNavigate: () => RouteNavigate;
 **Returns:**
 
 [RouteNavigate](#routenavigate)
+
+[Edit this section](https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/use-functions.ts)
+
+## usePreventNavigate$
+
+Prevents navigation when the callback returns a truthy value. Use this to prevent data loss when the application has unsaved state
+
+```typescript
+usePreventNavigate$: (qrl: PreventNavigateCallback) => void
+```
+
+<table><thead><tr><th>
+
+Parameter
+
+</th><th>
+
+Type
+
+</th><th>
+
+Description
+
+</th></tr></thead>
+<tbody><tr><td>
+
+qrl
+
+</td><td>
+
+[PreventNavigateCallback](#preventnavigatecallback)
+
+</td><td>
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+void
 
 [Edit this section](https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/use-functions.ts)
 

@@ -80,6 +80,31 @@ export type RouteStateInternal = {
   scroll?: boolean;
 };
 
+/**
+ * Before SPA navigation (via `<Link />` or `useNavigate()`), this will be called to check if the
+ * navigation should be prevented.
+ *
+ * This can be used to show a nice dialog to the user, and wait for the user to confirm.
+ *
+ * Return `true` to prevent navigation. If you return a Promise, the navigation will be blocked
+ * until the promise resolves.
+ *
+ * However, when the user navigates away by clicking on a regular `<a />` or using the browser's
+ * back/forward buttons, this callback will not be awaited. This is because the browser does not
+ * provide a way to asynchronously prevent these navigations. In this case, returning a Promise or
+ * returning `true` will tell the browser to show a confirmation dialog, which cannot be
+ * customized.
+ *
+ * When the callback is called from the browser, the `fromBrowser` parameter will be `true`. Use
+ * this to know whether to show a dialog or just return `true` to prevent the navigation.
+ *
+ * @public
+ */
+export type PreventNavigateCallback = (fromBrowser?: boolean) => ValueOrPromise<boolean>;
+
+/** @internal registers prevent navigate handler and returns cleanup function */
+export type RoutePreventNavigate = QRL<(cb$: QRL<PreventNavigateCallback>) => () => void>;
+
 export type ScrollState = {
   x: number;
   y: number;

@@ -451,6 +451,20 @@
       "mdFile": "qwik-city.pathparams.md"
     },
     {
+      "name": "PreventNavigateCallback",
+      "id": "preventnavigatecallback",
+      "hierarchy": [
+        {
+          "name": "PreventNavigateCallback",
+          "id": "preventnavigatecallback"
+        }
+      ],
+      "kind": "TypeAlias",
+      "content": "Before SPA navigation (via `<Link />` or `useNavigate()`<!-- -->), this will be called to check if the navigation should be prevented.\n\nThis can be used to show a nice dialog to the user, and wait for the user to confirm.\n\nReturn `true` to prevent navigation. If you return a Promise, the navigation will be blocked until the promise resolves.\n\nHowever, when the user navigates away by clicking on a regular `<a />` or using the browser's back/forward buttons, this callback will not be awaited. This is because the browser does not provide a way to asynchronously prevent these navigations. In this case, returning a Promise or returning `true` will tell the browser to show a confirmation dialog, which cannot be customized.\n\nWhen the callback is called from the browser, the `fromBrowser` parameter will be `true`<!-- -->. Use this to know whether to show a dialog or just return `true` to prevent the navigation.\n\n\n```typescript\nexport type PreventNavigateCallback = (fromBrowser?: boolean) => ValueOrPromise<boolean>;\n```",
+      "editUrl": "https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/types.ts",
+      "mdFile": "qwik-city.preventnavigatecallback.md"
+    },
+    {
       "name": "QWIK_CITY_SCROLLER",
       "id": "qwik_city_scroller",
       "hierarchy": [
@@ -841,6 +855,20 @@
       "content": "```typescript\nuseNavigate: () => RouteNavigate\n```\n**Returns:**\n\n[RouteNavigate](#routenavigate)",
       "editUrl": "https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/use-functions.ts",
       "mdFile": "qwik-city.usenavigate.md"
+    },
+    {
+      "name": "usePreventNavigate$",
+      "id": "usepreventnavigate_",
+      "hierarchy": [
+        {
+          "name": "usePreventNavigate$",
+          "id": "usepreventnavigate_"
+        }
+      ],
+      "kind": "Function",
+      "content": "Prevents navigation when the callback returns a truthy value. Use this to prevent data loss when the application has unsaved state\n\n\n```typescript\nusePreventNavigate$: (qrl: PreventNavigateCallback) => void\n```\n\n\n<table><thead><tr><th>\n\nParameter\n\n\n</th><th>\n\nType\n\n\n</th><th>\n\nDescription\n\n\n</th></tr></thead>\n<tbody><tr><td>\n\nqrl\n\n\n</td><td>\n\n[PreventNavigateCallback](#preventnavigatecallback)\n\n\n</td><td>\n\n\n</td></tr>\n</tbody></table>\n**Returns:**\n\nvoid",
+      "editUrl": "https://github.com/QwikDev/qwik/tree/main/packages/qwik-city/src/runtime/src/use-functions.ts",
+      "mdFile": "qwik-city.usepreventnavigate_.md"
     },
     {
       "name": "validator$",

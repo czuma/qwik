@@ -13,6 +13,7 @@ import {
   _weakSerialize,
   useStyles$,
   _waitUntilRendered,
+  type QRL,
 } from '@builder.io/qwik';
 import { isBrowser, isDev, isServer } from '@builder.io/qwik/build';
 import * as qwikCity from '@qwik-city-plan';
@@ -25,6 +26,7 @@ import {
   RouteInternalContext,
   RouteLocationContext,
   RouteNavigateContext,
+  RoutePreventNavigateContext,
   RouteStateContext,
 } from './contexts';
 import { createDocumentHead, resolveHead } from './head';
@@ -39,6 +41,7 @@ import type {
   LoadedRoute,
   MutableRouteLocation,
   PageModule,
+  PreventNavigateCallback,
   ResolvedDocumentHead,
   RouteActionValue,
   RouteNavigate,
@@ -87,6 +90,12 @@ export interface QwikCityProps {
    */
   viewTransition?: boolean;
 }
+
+// Gets populated by registerPreventNav on the client
+const preventNav: {
+  $cbs$?: Set<QRL<PreventNavigateCallback>> | undefined;
+  $handler$?: (event: BeforeUnloadEvent) => void;
+} = {};
 
 /** @public */
 export const QwikCityProvider = component$<QwikCityProps>((props) => {
@@ -145,6 +154,45 @@ export const QwikCityProvider = component$<QwikCityProps>((props) => {
       : undefined
   );
 
+  const registerPreventNav = $((fn$: QRL<PreventNavigateCallback>) => {
+    if (!isBrowser) {
+      return;
+    }
+    preventNav.$handler$ ||= (event: BeforeUnloadEvent) => {
+      if (!preventNav.$cbs$) {
+        return;
+      }
+      const prevents = [...preventNav.$cbs$.values()].map((cb) =>
+        cb.resolved ? cb.resolved(true) : cb(true)
+      );
+      // this catches both true and Promise<any>
+      // we assume a Promise means to prevent the navigation
+      if (prevents.some(Boolean)) {
+        // Note that this won't work when this handler QRL isn't loaded yet, it will run too late
+        event.preventDefault();
+        // legacy support
+        event.returnValue = true;
+      }
+    };
+
+    (preventNav.$cbs$ ||= new Set()).add(fn$);
+    // we need the QRLs to be synchronous if possible, for the beforeunload event
+    fn$.resolve();
+    // TS thinks we're a webworker and doesn't know about beforeunload
+    (window as any).addEventListener('beforeunload', preventNav.$handler$);
+
+    return () => {
+      if (preventNav.$cbs$) {
+        preventNav.$cbs$.delete(fn$);
+        if (!preventNav.$cbs$.size) {
+          preventNav.$cbs$ = undefined;
+          // unregister the event listener if no more callbacks, to make older Firefox happy
+          (window as any).removeEventListener('beforeunload', preventNav.$handler$);
+        }
+      }
+    };
+  });
+
   const goto: RouteNavigate = $(async (path, opt) => {
     const {
       type = 'link',
@@ -152,6 +200,14 @@ export const QwikCityProvider = component$<QwikCityProps>((props) => {
       replaceState = false,
       scroll = true,
     } = typeof opt === 'object' ? opt : { forceReload: opt };
+
+    if (preventNav.$cbs$) {
+      const prevents = await Promise.all([...preventNav.$cbs$.values()].map((cb) => cb()));
+      if (prevents.some(Boolean)) {
+        return;
+      }
+    }
+
     if (typeof path === 'number') {
       if (isBrowser) {
         history.go(path);
@@ -215,6 +271,7 @@ export const QwikCityProvider = component$<QwikCityProps>((props) => {
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
   useContextProvider(RouteInternalContext, routeInternal);
+  useContextProvider<any>(RoutePreventNavigateContext, registerPreventNav);
 
   useTask$(({ track }) => {
     async function run() {

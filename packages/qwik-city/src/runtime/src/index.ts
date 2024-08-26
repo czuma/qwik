@@ -1,47 +1,57 @@
 export type { FormSubmitCompletedDetail as FormSubmitSuccessDetail } from './form-component';
 
 export type {
-  MenuData,
+  Action,
+  ActionConstructor,
+  ActionReturn,
+  ActionStore,
   ContentHeading,
   ContentMenu,
   Cookie,
   CookieOptions,
   CookieValue,
+  DataValidator,
+  DeferReturn,
   DocumentHead,
   DocumentHeadProps,
   DocumentHeadValue,
   DocumentLink,
   DocumentMeta,
-  DocumentStyle,
   DocumentScript,
+  DocumentStyle,
+  FailOfRest,
+  FailReturn,
+  GetValidatorType,
+  JSONObject,
+  JSONValue,
+  Loader,
+  LoaderSignal,
+  MenuData,
+  NavigationType,
   PageModule,
   PathParams,
-  RequestHandler,
-  RequestEvent,
-  RequestEventLoader,
-  RequestEventAction,
-  RequestEventCommon,
+  PreventNavigateCallback,
   QwikCityPlan,
+  RequestEvent,
+  RequestEventAction,
+  RequestEventBase,
+  RequestEventCommon,
+  RequestEventLoader,
+  RequestHandler,
   ResolvedDocumentHead,
   RouteData,
   RouteLocation,
-  StaticGenerateHandler,
-  Action,
-  Loader,
-  ActionStore,
-  LoaderSignal,
-  ActionConstructor,
-  FailReturn,
-  ZodConstructor,
-  StaticGenerate,
   RouteNavigate,
-  NavigationType,
-  DeferReturn,
-  RequestEventBase,
-  JSONObject,
-  JSONValue,
-  ValidatorErrorType,
+  ServerFunction,
+  ServerQRL,
+  StaticGenerate,
+  StaticGenerateHandler,
+  StrictUnion,
+  TypedDataValidator,
   ValidatorErrorKeyDotNotation,
+  ValidatorErrorType,
+  ValidatorReturn,
+  ZodConstructor,
 } from './types';
 
 export { RouterOutlet } from './router-outlet-component';
@@ -55,6 +65,7 @@ export {
 export { type LinkProps, Link } from './link-component';
 export { ServiceWorkerRegister } from './sw-component';
 export { useDocumentHead, useLocation, useContent, useNavigate } from './use-functions';
+export { usePreventNavigate$, usePreventNavigateQrl } from './use-functions';
 export { routeAction$, routeActionQrl } from './server-functions';
 export { globalAction$, globalActionQrl } from './server-functions';
 export { routeLoader$, routeLoaderQrl } from './server-functions';
@@ -66,15 +77,3 @@ export { z } from 'zod';
 
 export { Form } from './form-component';
 export type { FormProps } from './form-component';
-
-export type {
-  TypedDataValidator,
-  DataValidator,
-  GetValidatorType,
-  FailOfRest,
-  ActionReturn,
-  StrictUnion,
-  ValidatorReturn,
-  ServerQRL,
-  ServerFunction,
-} from './types';
